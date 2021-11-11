@@ -2,6 +2,7 @@ const fs = require('fs');
 const eris = require('eris');
 const check = require('./check');
 const _ = require('lodash');
+const { wowItemName } = require('./wow');
 
 const rankName = (rank) => {
   if (rank === '3') return 'Regular';
@@ -26,13 +27,16 @@ const runCheck = async (softresId) => {
 
   const messages = [];
   messages.push(`Invalid reserves for ${instanceName(softresData.instance)}`);
-  invalidReserves.forEach(({ name, total, priority }) => {
+  invalidReserves.forEach(({ name, items, priorityItems }) => {
     const member = members.find((m) => m.name === name);
     const rank = member ? member.rank : '1';
     messages.push(
-      `${_.capitalize(name)}(${rankName(
-        rank
-      )}) - total: ${total}, priority: ${priority}`
+      `${_.capitalize(name)}(${rankName(rank)}) - ${items
+        .map(
+          (i) =>
+            `${wowItemName(i)}${priorityItems.includes(i) ? '(Priority)' : ''}`
+        )
+        .join(', ')}`
     );
   });
   return messages.join('\n');

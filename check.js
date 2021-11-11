@@ -11,10 +11,11 @@ const fetchSoftres = async (id) => {
     .value();
 
   const reserves = data.reserved.map(({ name, items }) => {
-    const total = items.length;
-    const priority = _.intersection(items, priorityItems).length;
-
-    return { name: name.toLowerCase(), total, priority };
+    return {
+      name: name.toLowerCase(),
+      items,
+      priorityItems: _.intersection(items, priorityItems),
+    };
   });
 
   return { softresData: data, reserves };
@@ -46,20 +47,23 @@ const check = async (softresId) => {
   const { softresData, reserves } = await fetchSoftres(softresId);
   const members = await fetchMembers(softresData.instance.toLowerCase());
 
-  const invalidReserves = _.reject(reserves, ({ name, total, priority }) => {
-    const member = members.find((m) => m.name === name);
-    const rank = member ? member.rank : '1';
+  const invalidReserves = _.reject(
+    reserves,
+    ({ name, items, priorityItems }) => {
+      const member = members.find((m) => m.name === name);
+      const rank = member ? member.rank : '1';
 
-    if (rank === '1') {
-      return total <= 1 && priority === 0;
-    } else if (rank === '2') {
-      return total <= 2 && priority === 0;
-    } else if (rank === '3') {
-      return total <= 2 && priority <= 1;
-    } else {
-      return false;
+      if (rank === '1') {
+        return items.length <= 1 && priorityItems.length === 0;
+      } else if (rank === '2') {
+        return items.length <= 2 && priorityItems.length === 0;
+      } else if (rank === '3') {
+        return items.length <= 2 && priorityItems.length <= 1;
+      } else {
+        return false;
+      }
     }
-  });
+  );
 
   return { softresData, members, invalidReserves };
 };
