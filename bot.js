@@ -9,16 +9,23 @@ const rankName = (rank) => {
   return 'First-timer';
 };
 
+const instanceName = (instance) => {
+  if (instance === 'aq40') return "Ahn'Qiraj";
+  if (instance === 'bwl') return 'Blackwing Lair';
+  if (instance === 'mc') return 'Molten Core';
+  return instance;
+};
+
 const runCheck = async (softresId) => {
   softresId = softresId.replace('https://softres.it/raid/', '');
   if (!softresId.match(/[0-9]+/)) return 'Send me softres.it link or ID';
 
   const { softresData, members, invalidReserves } = await check(softresId);
   if (!invalidReserves.length)
-    return `All reserves are valid for ${softresData.instance}`;
+    return `All reserves are valid for ${instanceName(softresData.instance)}`;
 
   const messages = [];
-  messages.push(`Invalid reserves for ${softresData.instance}`);
+  messages.push(`Invalid reserves for ${instanceName(softresData.instance)}`);
   invalidReserves.forEach(({ name, total, priority }) => {
     const member = members.find((m) => m.name === name);
     const rank = member ? member.rank : '1';
