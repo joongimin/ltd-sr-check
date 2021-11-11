@@ -1,4 +1,5 @@
 const check = require('./check');
+const _ = require('lodash');
 
 (async (softresId) => {
   softresId = softresId.replace('https://softres.it/raid/', '');
@@ -14,7 +15,9 @@ const check = require('./check');
       const member = members.find((m) => m.name === name);
       const rank = member ? member.rank : '1';
       console.log(
-        `${name} - total: ${total}, priority: ${priority}, rank: ${rank}`
+        `${_.capitalize(
+          name
+        )} - total: ${total}, priority: ${priority}, rank: ${rank}`
       );
     });
   } else console.log(`Everything is valid for ${softresData.instance}`);
