@@ -3,6 +3,7 @@ const eris = require('eris');
 const check = require('./check');
 
 const runCheck = async (softresId) => {
+  softresId = softresId.replace('https://softres.it/raid/', '');
   if (!softresId.match(/[0-9]+/)) return 'Send me softres.it link or ID';
 
   const { softresData, members, invalidReserves } = await check(softresId);

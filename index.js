@@ -1,6 +1,12 @@
 const check = require('./check');
 
 (async (softresId) => {
+  softresId = softresId.replace('https://softres.it/raid/', '');
+  if (!softresId.match(/[0-9]+/)) {
+    console.log('Invalid softres.it ID format');
+    return;
+  }
+
   const { softresData, members, invalidReserves } = await check(softresId);
   if (invalidReserves.length) {
     console.log(`Invalid reserves for ${softresData.instance}`);
