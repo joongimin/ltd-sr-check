@@ -1,3 +1,4 @@
+const fs = require('fs');
 const eris = require('eris');
 const check = require('./check');
 
@@ -21,9 +22,10 @@ const runCheck = async (softresId) => {
 };
 
 // Create a Client instance with our bot token.
-const bot = new eris.Client(
-  'OTA2ODk0MjE5MjYyNzIyMTEx.YYfRDw.fn6fJlrIp2V0YxFsdpNxZWRXa7s'
-);
+const botToken = fs.readFileSync('secret/discord-bot-token', {
+  encoding: 'utf8',
+});
+const bot = new eris.Client(botToken);
 
 // When the bot is connected and ready, log to console.
 bot.on('ready', () => {

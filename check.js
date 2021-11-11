@@ -22,7 +22,7 @@ const fetchSoftres = async (id) => {
 
 const fetchMembers = async (instance) => {
   const googleAuth = new google.auth.GoogleAuth({
-    keyFilename: 'ltd-sr-check-2c15bc2ecb33.secret.json',
+    keyFilename: 'secret/ltd-sr-check-2c15bc2ecb33.json',
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   });
   const auth = await googleAuth.getClient();
