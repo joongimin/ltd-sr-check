@@ -3,6 +3,12 @@ const eris = require('eris');
 const check = require('./check');
 const _ = require('lodash');
 
+const rankName = (rank) => {
+  if (rank === '3') return 'Regular';
+  if (rank === '2') return 'Second-timer';
+  return 'First-timer';
+};
+
 const runCheck = async (softresId) => {
   softresId = softresId.replace('https://softres.it/raid/', '');
   if (!softresId.match(/[0-9]+/)) return 'Send me softres.it link or ID';
@@ -17,9 +23,9 @@ const runCheck = async (softresId) => {
     const member = members.find((m) => m.name === name);
     const rank = member ? member.rank : '1';
     messages.push(
-      `${_.capitalize(
-        name
-      )} - total: ${total}, priority: ${priority}, rank: ${rank}`
+      `${_.capitalize(name)}(${rankName(
+        rank
+      )}) - total: ${total}, priority: ${priority}`
     );
   });
   return messages.join('\n');
