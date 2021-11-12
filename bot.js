@@ -53,18 +53,19 @@ bot.on('ready', () => {
   console.log('Connected and ready.');
 });
 
-// Every time a message is sent anywhere the bot is present,
-// this event will fire and we will check if the bot was mentioned.
-// If it was, the bot will attempt to respond with "Present".
 bot.on('messageCreate', async (msg) => {
+  console.log(msg);
   const botWasMentioned = msg.mentions.find(
     (mentionedUser) => mentionedUser.id === bot.user.id
   );
+  const receivedDM = msg.channel.type === 1 && msg.author.bot === false;
 
-  if (botWasMentioned) {
+  if (botWasMentioned || receivedDM) {
     try {
-      const tokens = msg.content.split(' ');
-      const message = await runCheck(tokens[1]);
+      const softresId = msg.content.includes(' ')
+        ? msg.content.split(' ')[1]
+        : msg.content;
+      const message = await runCheck(softresId);
 
       await msg.channel.createMessage(message);
     } catch (err) {
