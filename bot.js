@@ -27,9 +27,9 @@ const runCheckRank = async () => {
       messages.push(`Invalid ranks for ${instanceName(instance)}:`);
       invalidRanks.forEach(({ name, rank, attendance, validRank }) => {
         messages.push(
-          `${name} - attendance: ${attendance}, current-rank: ${rankName(
+          `${_.capitalize(name)}(${rankName(
             rank
-          )}, valid-rank: ${rankName(validRank)}`
+          )}) - attendance: ${attendance}, valid-rank: ${rankName(validRank)}`
         );
       });
     } else messages.push(`All ranks are valid for ${instanceName(instance)}.`);
@@ -87,14 +87,14 @@ bot.on('messageCreate', async (msg) => {
 
   if (botWasMentioned || receivedDM) {
     try {
-      if (msg.content === 'rank') {
+      const command = msg.content.includes(' ')
+        ? msg.content.split(' ')[1]
+        : msg.content;
+      if (command === 'rank') {
         const message = await runCheckRank();
         await msg.channel.createMessage(message);
       } else {
-        const softresId = msg.content.includes(' ')
-          ? msg.content.split(' ')[1]
-          : msg.content;
-        const message = await runCheckSoftres(softresId);
+        const message = await runCheckSoftres(command);
 
         await msg.channel.createMessage(message);
       }
