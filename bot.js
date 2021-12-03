@@ -1,5 +1,6 @@
 const fs = require('fs');
 const eris = require('eris');
+const checkRank = require('./checkRank');
 const checkSoftres = require('./checkSoftres');
 const _ = require('lodash');
 const { wowItemName } = require('./wow');
@@ -17,7 +18,29 @@ const instanceName = (instance) => {
   return instance;
 };
 
-const runCheck = async (softresId) => {
+const runCheckRank = async () => {
+  const messages = [];
+
+  for (const instance of ['aq40', 'bwl', 'mc']) {
+    const invalidRanks = await checkRank(instance);
+    if (invalidRanks.length) {
+      messages.push(`Invalid ranks for ${instanceName(instance)}:`);
+      invalidRanks.forEach(({ name, rank, attendance, validRank }) => {
+        messages.push(
+          `${name} - attendance: ${attendance}, current-rank: ${rankName(
+            rank
+          )}, valid-rank: ${rankName(validRank)}`
+        );
+      });
+    } else messages.push(`All ranks are valid for ${instanceName(instance)}.`);
+
+    messages.push('');
+  }
+
+  return messages.join('\n');
+};
+
+const runCheckSoftres = async (softresId) => {
   softresId = softresId.replace('https://softres.it/raid/', '');
   if (!softresId.match(/[0-9]+/)) return 'Send me softres.it link or ID';
 
@@ -25,10 +48,10 @@ const runCheck = async (softresId) => {
     softresId
   );
   if (!invalidReserves.length)
-    return `All reserves are valid for ${instanceName(softresData.instance)}`;
+    return `All reserves are valid for ${instanceName(softresData.instance)}.`;
 
   const messages = [];
-  messages.push(`Invalid reserves for ${instanceName(softresData.instance)}`);
+  messages.push(`Invalid reserves for ${instanceName(softresData.instance)}:`);
   invalidReserves.forEach(({ name, items, priorityItems }) => {
     const member = members.find((m) => m.name === name);
     const rank = member ? member.rank : '1';
@@ -64,12 +87,17 @@ bot.on('messageCreate', async (msg) => {
 
   if (botWasMentioned || receivedDM) {
     try {
-      const softresId = msg.content.includes(' ')
-        ? msg.content.split(' ')[1]
-        : msg.content;
-      const message = await runCheck(softresId);
+      if (msg.content === 'rank') {
+        const message = await runCheckRank();
+        await msg.channel.createMessage(message);
+      } else {
+        const softresId = msg.content.includes(' ')
+          ? msg.content.split(' ')[1]
+          : msg.content;
+        const message = await runCheckSoftres(softresId);
 
-      await msg.channel.createMessage(message);
+        await msg.channel.createMessage(message);
+      }
     } catch (err) {
       // There are various reasons why sending a message may fail.
       // The API might time out or choke and return a 5xx status,
