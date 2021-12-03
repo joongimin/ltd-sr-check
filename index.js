@@ -1,4 +1,4 @@
-const check = require('./check');
+const checkSoftres = require('./checkSoftres');
 const _ = require('lodash');
 const { wowItemName } = require('./wow');
 
@@ -9,7 +9,9 @@ const { wowItemName } = require('./wow');
     return;
   }
 
-  const { softresData, members, invalidReserves } = await check(softresId);
+  const { softresData, members, invalidReserves } = await checkSoftres(
+    softresId
+  );
   if (invalidReserves.length) {
     console.log(`Invalid reserves for ${softresData.instance}`);
     invalidReserves.forEach(({ name, items, priorityItems }) => {

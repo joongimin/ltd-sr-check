@@ -1,6 +1,6 @@
 const fs = require('fs');
 const eris = require('eris');
-const check = require('./check');
+const checkSoftres = require('./checkSoftres');
 const _ = require('lodash');
 const { wowItemName } = require('./wow');
 
@@ -21,7 +21,9 @@ const runCheck = async (softresId) => {
   softresId = softresId.replace('https://softres.it/raid/', '');
   if (!softresId.match(/[0-9]+/)) return 'Send me softres.it link or ID';
 
-  const { softresData, members, invalidReserves } = await check(softresId);
+  const { softresData, members, invalidReserves } = await checkSoftres(
+    softresId
+  );
   if (!invalidReserves.length)
     return `All reserves are valid for ${instanceName(softresData.instance)}`;
 
