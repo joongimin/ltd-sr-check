@@ -28,3 +28,17 @@ const { wowItemName } = require('./wow');
     });
   } else console.log(`Everything is valid for ${softresData.instance}`);
 })(process.argv[2]);
+
+// const fetchAttendances = require('./fetchAttendances');
+
+// (async () => {
+//   const attendances = await fetchAttendances('aq40');
+//   console.log(attendances);
+// })();
+
+// const fetchMembers = require('./fetchMembers');
+
+// (async () => {
+//   const attendance = await fetchMembers('aq40');
+//   console.log(attendance);
+// })();
