@@ -90,12 +90,15 @@ bot.on('messageCreate', async (msg) => {
       const command = msg.content.includes(' ')
         ? msg.content.split(' ')[1]
         : msg.content;
-      if (command === 'rank') {
-        const message = await runCheckRank();
-        await msg.channel.createMessage(message);
-      } else {
-        const message = await runCheckSoftres(command);
 
+      let message = null;
+      if (command === 'rank') message = await runCheckRank();
+      else message = await runCheckSoftres(command);
+
+      if (message) {
+        const MAX_MESSAGE_LENGTH = 4000;
+        if (message.length > MAX_MESSAGE_LENGTH)
+          message = message.slice(0, MAX_MESSAGE_LENGTH - 1) + '…';
         await msg.channel.createMessage(message);
       }
     } catch (err) {
