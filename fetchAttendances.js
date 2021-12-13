@@ -16,41 +16,33 @@ const getInstanceId = (instance) => {
   }
 };
 
-const fetchAttendancesFromPage = async (instance, page) => {
+const fetchAttendances = async (instance) => {
   const MAX_RAIDS = 10;
   const instanceId = getInstanceId(instance);
   const response = await axios(
-    `https://vanilla.warcraftlogs.com/guild/attendance-table/612614/0/${instanceId}?page=${page}`
+    `https://vanilla.warcraftlogs.com/guild/attendance-table/612614/0/${instanceId}`
   );
 
   const $ = cheerio.load(response.data);
 
   const attendance = {};
 
+  const dates = [
+    ...response.data.matchAll(/var createdDate = new Date\((\d+)\)/g),
+  ].map((m) => m[1]);
+  const validDates = [...dates].sort().reverse().slice(0, MAX_RAIDS);
+
   $('#attendance-table > tbody > tr').each(function () {
     const cols = [...$(this).find('td')];
     const name = $(cols[0]).text().trim();
-    const count = cols
-      .slice(2, 2 + MAX_RAIDS)
-      .filter((c) => $(c).text().trim() === '1').length;
-    attendance[name.toLowerCase()] = count;
+    attendance[name.toLowerCase()] = cols
+      .slice(2)
+      .filter(
+        (c, i) => validDates.includes(dates[i]) && $(c).text().trim() === '1'
+      ).length;
   });
 
   return attendance;
-};
-
-const fetchAttendances = async (instance) => {
-  const result = {};
-  const MAX_PAGES = 1;
-  for (let i = 1; i <= MAX_PAGES; ++i) {
-    const attendances = await fetchAttendancesFromPage(instance, i);
-    if (_.isEmpty(attendances)) break;
-
-    for (const [k, v] of Object.entries(attendances))
-      result[k] = (result[k] || 0) + v;
-  }
-
-  return result;
 };
 
 module.exports = fetchAttendances;
