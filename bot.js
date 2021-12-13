@@ -96,7 +96,7 @@ bot.on('messageCreate', async (msg) => {
       else message = await runCheckSoftres(command);
 
       if (message) {
-        const MAX_MESSAGE_LENGTH = 4000;
+        const MAX_MESSAGE_LENGTH = 2000;
         if (message.length > MAX_MESSAGE_LENGTH)
           message = message.slice(0, MAX_MESSAGE_LENGTH - 1) + '…';
         await msg.channel.createMessage(message);
