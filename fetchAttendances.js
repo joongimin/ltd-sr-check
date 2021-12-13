@@ -17,6 +17,7 @@ const getInstanceId = (instance) => {
 };
 
 const fetchAttendancesFromPage = async (instance, page) => {
+  const MAX_RAIDS = 10;
   const instanceId = getInstanceId(instance);
   const response = await axios(
     `https://vanilla.warcraftlogs.com/guild/attendance-table/612614/0/${instanceId}?page=${page}`
@@ -27,7 +28,7 @@ const fetchAttendancesFromPage = async (instance, page) => {
   const attendance = {};
 
   $('#attendance-table > tbody > tr').each(function () {
-    const cols = [...$(this).find('td')];
+    const cols = [...$(this).find('td')].slice(0, MAX_RAIDS);
     const name = $(cols[0]).text().trim();
     const count = cols.filter((c) => $(c).text().trim() === '1').length;
     attendance[name.toLowerCase()] = count;
@@ -38,8 +39,8 @@ const fetchAttendancesFromPage = async (instance, page) => {
 
 const fetchAttendances = async (instance) => {
   const result = {};
-  const MAX_PAGES = 10;
-  for (let i = 1; i < MAX_PAGES; ++i) {
+  const MAX_PAGES = 1;
+  for (let i = 1; i <= MAX_PAGES; ++i) {
     const attendances = await fetchAttendancesFromPage(instance, i);
     if (_.isEmpty(attendances)) break;
 
