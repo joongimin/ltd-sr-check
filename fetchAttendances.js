@@ -28,9 +28,11 @@ const fetchAttendancesFromPage = async (instance, page) => {
   const attendance = {};
 
   $('#attendance-table > tbody > tr').each(function () {
-    const cols = [...$(this).find('td')].slice(0, MAX_RAIDS);
+    const cols = [...$(this).find('td')];
     const name = $(cols[0]).text().trim();
-    const count = cols.filter((c) => $(c).text().trim() === '1').length;
+    const count = cols
+      .slice(2, 2 + MAX_RAIDS)
+      .filter((c) => $(c).text().trim() === '1').length;
     attendance[name.toLowerCase()] = count;
   });
 
