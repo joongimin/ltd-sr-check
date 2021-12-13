@@ -1,6 +1,6 @@
 const { google } = require('googleapis');
 
-const fetchMembers = async (instance) => {
+const fetchMembers = async () => {
   const googleAuth = new google.auth.GoogleAuth({
     keyFilename: 'secret/ltd-sr-check-2c15bc2ecb33.json',
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
@@ -13,12 +13,16 @@ const fetchMembers = async (instance) => {
   const table = data.values;
   const header = table[0].map((c) => c.toLowerCase());
   const colName = header.indexOf('character');
-  const colRank = header.indexOf(instance);
+  const colMc = header.indexOf('mc');
+  const colBwl = header.indexOf('bwl');
+  const colAq40 = header.indexOf('aq40');
 
   const rows = table.slice(1);
   return rows.map((row) => ({
     name: row[colName].split('-')[0].toLowerCase(),
-    rank: row[colRank],
+    mc: row[colMc],
+    bwl: row[colBwl],
+    aq40: row[colAq40],
   }));
 };
 

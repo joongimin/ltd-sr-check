@@ -1,5 +1,4 @@
 const fetchAttendances = require('./fetchAttendances');
-const fetchMembers = require('./fetchMembers');
 
 const validRank = (attendance) => {
   if (attendance >= 2) return '3';
@@ -7,15 +6,21 @@ const validRank = (attendance) => {
   return '1';
 };
 
-const checkRank = async (instance) => {
+const checkRank = async (instance, members) => {
   const attendances = await fetchAttendances(instance);
-  const members = await fetchMembers(instance);
 
   return members
-    .filter((member) => member.rank !== validRank(attendances[member.name]))
+    .filter(
+      (member) => member[instance] !== validRank(attendances[member.name])
+    )
     .map((member) => {
       const attendance = attendances[member.name] || 0;
-      return { ...member, attendance, validRank: validRank(attendance) };
+      return {
+        name: member.name,
+        rank: member[instance],
+        attendance,
+        validRank: validRank(attendance),
+      };
     });
 };
 

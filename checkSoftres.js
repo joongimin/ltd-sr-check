@@ -4,13 +4,14 @@ const _ = require('lodash');
 
 const check = async (softresId) => {
   const { softresData, reserves } = await fetchSoftres(softresId);
-  const members = await fetchMembers(softresData.instance.toLowerCase());
+  const instance = softresData.instance.toLowerCase();
+  const members = await fetchMembers();
 
   const invalidReserves = _.reject(
     reserves,
     ({ name, items, priorityItems }) => {
       const member = members.find((m) => m.name === name);
-      const rank = member ? member.rank : '1';
+      const rank = member ? member[instance] : '1';
 
       if (rank === '1') {
         return items.length <= 1 && priorityItems.length === 0;

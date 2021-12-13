@@ -2,6 +2,7 @@ const fs = require('fs');
 const eris = require('eris');
 const checkRank = require('./checkRank');
 const checkSoftres = require('./checkSoftres');
+const fetchMembers = require('./fetchMembers');
 const _ = require('lodash');
 const { wowItemName } = require('./wow');
 
@@ -20,9 +21,9 @@ const instanceName = (instance) => {
 
 const runCheckRank = async () => {
   const messages = [];
-
+  const members = await fetchMembers();
   for (const instance of ['aq40', 'bwl', 'mc']) {
-    const invalidRanks = await checkRank(instance);
+    const invalidRanks = await checkRank(instance, members);
     if (invalidRanks.length) {
       messages.push(`Invalid ranks for ${instanceName(instance)}:`);
       invalidRanks.forEach(({ name, rank, attendance, validRank }) => {

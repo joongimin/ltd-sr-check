@@ -1,12 +1,14 @@
 const checkRank = require('./checkRank');
 const checkSoftres = require('./checkSoftres');
+const fetchMembers = require('./fetchMembers');
 const _ = require('lodash');
 const { wowItemName } = require('./wow');
 
 (async (command) => {
   if (command === 'rank') {
+    const members = await fetchMembers();
     ['aq40', 'bwl', 'mc'].forEach(async (instance) => {
-      const invalidRanks = await checkRank(instance);
+      const invalidRanks = await checkRank(instance, members);
       if (invalidRanks.length) {
         console.log(`Invalid ranks for ${instance}:`);
         invalidRanks.forEach(({ name, rank, attendance, validRank }) => {
