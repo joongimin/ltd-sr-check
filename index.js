@@ -1,4 +1,4 @@
-const checkRank = require('./checkRank');
+const updateAttendances = require('./updateAttendances');
 const checkSoftres = require('./checkSoftres');
 const fetchMembers = require('./fetchMembers');
 const _ = require('lodash');
@@ -8,17 +8,8 @@ const { wowItemName } = require('./wow');
   if (command === 'rank') {
     const members = await fetchMembers();
     ['aq40', 'bwl', 'mc'].forEach(async (instance) => {
-      const invalidRanks = await checkRank(instance, members);
-      if (invalidRanks.length) {
-        console.log(`Invalid ranks for ${instance}:`);
-        invalidRanks.forEach(({ name, rank, attendance, validRank }) => {
-          console.log(
-            `${name} - attendance: ${attendance}, current-rank: ${rank}, valid-rank: ${validRank}`
-          );
-        });
-      } else console.log(`All ranks are valid for ${instance}`);
+      await updateAttendances(instance, members);
     });
-
     return;
   }
 
@@ -32,12 +23,13 @@ const { wowItemName } = require('./wow');
     softresId
   );
   if (invalidReserves.length) {
-    console.log(`Invalid reserves for ${softresData.instance}`);
+    const { instance } = softresData;
+    console.log(`Invalid reserves for ${instance}`);
     invalidReserves.forEach(({ name, items, priorityItems }) => {
       const member = members.find((m) => m.name === name);
-      const rank = member ? member.rank : '1';
+      const attendance = member ? member[instance] : 0;
       console.log(
-        `${_.capitalize(name)}(${rank}) - ${items
+        `${_.capitalize(name)}(${attendance}) - ${items
           .map(
             (i) =>
               `${wowItemName(i)}${

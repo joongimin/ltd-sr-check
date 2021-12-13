@@ -13,9 +13,9 @@ const fetchMembers = async () => {
   const rows = table.slice(1);
   return rows.map((row) => ({
     name: row[colName].split('-')[0].toLowerCase(),
-    mc: row[colMc],
-    bwl: row[colBwl],
-    aq40: row[colAq40],
+    mc: parseInt(row[colMc]),
+    bwl: parseInt(row[colBwl]),
+    aq40: parseInt(row[colAq40]),
   }));
 };
 

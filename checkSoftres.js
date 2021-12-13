@@ -11,13 +11,13 @@ const check = async (softresId) => {
     reserves,
     ({ name, items, priorityItems }) => {
       const member = members.find((m) => m.name === name);
-      const rank = member ? member[instance] : '1';
+      const attendance = member ? member[instance] : 0;
 
-      if (rank === '1') {
+      if (attendance === 0) {
         return items.length <= 1 && priorityItems.length === 0;
-      } else if (rank === '2') {
+      } else if (attendance === 1) {
         return items.length <= 2 && priorityItems.length === 0;
-      } else if (rank === '3') {
+      } else if (attendance >= 2) {
         return items.length <= 2 && priorityItems.length <= 1;
       } else {
         return false;

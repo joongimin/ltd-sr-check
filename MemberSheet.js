@@ -11,6 +11,15 @@ class MemberSheet {
     return data;
   }
 
+  async update(range, values) {
+    return await this.client.update({
+      spreadsheetId,
+      range,
+      valueInputOption: 'USER_ENTERED',
+      resource: { values },
+    });
+  }
+
   static async build() {
     const googleAuth = new google.auth.GoogleAuth({
       keyFilename: 'secret/ltd-sr-check-2c15bc2ecb33.json',

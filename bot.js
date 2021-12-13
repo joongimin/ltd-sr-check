@@ -1,14 +1,14 @@
 const fs = require('fs');
 const eris = require('eris');
-const checkRank = require('./checkRank');
+const updateAttendances = require('./updateAttendances');
 const checkSoftres = require('./checkSoftres');
 const fetchMembers = require('./fetchMembers');
 const _ = require('lodash');
 const { wowItemName } = require('./wow');
 
-const rankName = (rank) => {
-  if (rank === '3') return 'Regular';
-  if (rank === '2') return 'Second-timer';
+const rankName = (attendance) => {
+  if (attendance >= 2) return 'Regular';
+  if (attendance === 1) return 'Second-timer';
   return 'First-timer';
 };
 
@@ -19,23 +19,12 @@ const instanceName = (instance) => {
   return instance;
 };
 
-const runCheckRank = async () => {
+const runUpdateAttendances = async () => {
   const messages = [];
   const members = await fetchMembers();
   for (const instance of ['aq40', 'bwl', 'mc']) {
-    const invalidRanks = await checkRank(instance, members);
-    if (invalidRanks.length) {
-      messages.push(`Invalid ranks for ${instanceName(instance)}:`);
-      invalidRanks.forEach(({ name, rank, attendance, validRank }) => {
-        messages.push(
-          `${_.capitalize(name)}(${rankName(
-            rank
-          )}) - attendance: ${attendance}, valid-rank: ${rankName(validRank)}`
-        );
-      });
-    } else messages.push(`All ranks are valid for ${instanceName(instance)}.`);
-
-    messages.push('');
+    await updateAttendances(instance, members);
+    messages.push(`Updated attendances for ${instanceName(instance)}`);
   }
 
   return messages.join('\n');
@@ -48,16 +37,17 @@ const runCheckSoftres = async (softresId) => {
   const { softresData, members, invalidReserves } = await checkSoftres(
     softresId
   );
+  const { instance } = softresData;
   if (!invalidReserves.length)
-    return `All reserves are valid for ${instanceName(softresData.instance)}.`;
+    return `All reserves are valid for ${instanceName(instance)}.`;
 
   const messages = [];
-  messages.push(`Invalid reserves for ${instanceName(softresData.instance)}:`);
+  messages.push(`Invalid reserves for ${instanceName(instance)}:`);
   invalidReserves.forEach(({ name, items, priorityItems }) => {
     const member = members.find((m) => m.name === name);
-    const rank = member ? member.rank : '1';
+    const attendance = member ? member[instance] : 0;
     messages.push(
-      `${_.capitalize(name)}(${rankName(rank)}) - ${items
+      `${_.capitalize(name)}(${rankName(attendance)}) - ${items
         .map(
           (i) =>
             `${wowItemName(i)}${priorityItems.includes(i) ? '(Priority)' : ''}`
@@ -93,7 +83,7 @@ bot.on('messageCreate', async (msg) => {
         : msg.content;
 
       let message = null;
-      if (command === 'rank') message = await runCheckRank();
+      if (command === 'rank') message = await runUpdateAttendances();
       else message = await runCheckSoftres(command);
 
       if (message) {
