@@ -32,7 +32,6 @@ const runUpdateAttendances = async () => {
 
 const runCheckSoftres = async (softresId) => {
   softresId = softresId.replace('https://softres.it/raid/', '');
-  if (!softresId.match(/[0-9]+/)) return 'Send me softres.it link or ID';
 
   const { softresData, members, invalidReserves } = await checkSoftres(
     softresId

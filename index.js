@@ -14,10 +14,6 @@ const { wowItemName } = require('./wow');
   }
 
   const softresId = command.replace('https://softres.it/raid/', '');
-  if (!softresId.match(/[0-9]+/)) {
-    console.log('Invalid softres.it ID format');
-    return;
-  }
 
   const { softresData, members, invalidReserves } = await checkSoftres(
     softresId
