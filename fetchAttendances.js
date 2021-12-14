@@ -1,7 +1,6 @@
 const _ = require('lodash');
 const axios = require('axios');
 const cheerio = require('cheerio');
-const { kebabCase } = require('lodash');
 
 const getInstanceId = (instance) => {
   switch (instance) {
