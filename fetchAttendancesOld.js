@@ -15,7 +15,7 @@ const getInstanceId = (instance) => {
   }
 };
 
-const fetchAttendances = async (instance) => {
+const fetchAttendancesOld = async (instance) => {
   const MAX_RAIDS = 10;
   const instanceId = getInstanceId(instance);
   const response = await axios(
@@ -44,4 +44,4 @@ const fetchAttendances = async (instance) => {
   return attendance;
 };
 
-module.exports = fetchAttendances;
+module.exports = fetchAttendancesOld;

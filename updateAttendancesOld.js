@@ -1,5 +1,5 @@
 const MemberSheet = require('./MemberSheet');
-const fetchAttendances = require('./fetchAttendances');
+const fetchAttendancesOld = require('./fetchAttendancesOld');
 
 const colToA1 = (col) => {
   var temp,
@@ -12,8 +12,8 @@ const colToA1 = (col) => {
   return letter;
 };
 
-const updateAttendances = async (instance, members) => {
-  const attendances = await fetchAttendances(instance);
+const updateAttendancesOld = async (instance, members) => {
+  const attendances = await fetchAttendancesOld(instance);
 
   const memberSheet = await MemberSheet.build();
   const data = await memberSheet.get('Directory!1:1');
@@ -25,4 +25,4 @@ const updateAttendances = async (instance, members) => {
   );
 };
 
-module.exports = updateAttendances;
+module.exports = updateAttendancesOld;
