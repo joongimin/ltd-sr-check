@@ -1,4 +1,4 @@
-const updateAttendances = require('./updateAttendances');
+const updateAttendancesOld = require('./updateAttendancesOld');
 const checkSoftres = require('./checkSoftres');
 const fetchMembers = require('./fetchMembers');
 const _ = require('lodash');
@@ -8,7 +8,7 @@ const { wowItemName } = require('./wow');
   if (command === 'rank') {
     const members = await fetchMembers();
     ['aq40', 'bwl', 'mc'].forEach(async (instance) => {
-      await updateAttendances(instance, members);
+      await updateAttendancesOld(instance, members);
     });
     return;
   }

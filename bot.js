@@ -1,6 +1,6 @@
 const fs = require('fs');
 const eris = require('eris');
-const updateAttendances = require('./updateAttendances');
+const updateAttendancesOld = require('./updateAttendancesOld');
 const checkSoftres = require('./checkSoftres');
 const fetchMembers = require('./fetchMembers');
 const _ = require('lodash');
@@ -23,7 +23,7 @@ const runUpdateAttendances = async () => {
   const messages = [];
   const members = await fetchMembers();
   for (const instance of ['aq40', 'bwl', 'mc']) {
-    await updateAttendances(instance, members);
+    await updateAttendancesOld(instance, members);
     messages.push(`Updated attendances for ${instanceName(instance)}`);
   }
 
