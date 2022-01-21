@@ -30,8 +30,7 @@ const { wowItemName } = require('./wow');
     const { instance } = softresData;
     console.log(`Invalid reserves for ${instance}`);
     invalidReserves.forEach(({ name, items, priorityItems }) => {
-      const member = members.find((m) => m.name === name);
-      const attendance = member ? member[instance] : 0;
+      const attendance = members[name] || 0;
       console.log(
         `${_.capitalize(name)}(${attendance}) - ${items
           .map(

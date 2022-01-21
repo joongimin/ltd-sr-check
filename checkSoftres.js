@@ -1,17 +1,43 @@
 const fetchSoftres = require('./fetchSoftres');
-const fetchMembers = require('./fetchMembers');
+const Spreadsheet = require('./Spreadsheet');
 const _ = require('lodash');
+
+const getSheetName = (instance) => {
+  switch (instance) {
+    case 'naxx':
+      return 'Naxx Attendance';
+    case 'aq40':
+      return 'AQ40 Attendance';
+    case 'bwl':
+      return 'BWL Attendance';
+    case 'mc':
+      return 'MC Attendance';
+  }
+};
 
 const check = async (softresId) => {
   const { softresData, reserves } = await fetchSoftres(softresId);
   const instance = softresData.instance.toLowerCase();
-  const members = await fetchMembers();
+  const attendanceSheet = await Spreadsheet.build(
+    '1GbYI2yrv5hGAzSzF8Ql8vXRwtLiuhrMAFgnQU5BWzFs'
+  );
+  const sheetName = getSheetName(instance);
+  const data = await attendanceSheet.get(sheetName);
+  const table = data.values;
+
+  const members = {};
+  table.slice(1).forEach((row) => {
+    const name = row[0].toLowerCase();
+    const attendance = row
+      .slice(1, 11)
+      .filter((c) => c === 'P' || c === 'S').length;
+    members[name] = attendance;
+  });
 
   const invalidReserves = _.reject(
     reserves,
     ({ name, items, priorityItems }) => {
-      const member = members.find((m) => m.name === name);
-      const attendance = member ? member[instance] : 0;
+      const attendance = members[name] || 0;
 
       if (attendance === 0) {
         return items.length <= 1 && priorityItems.length === 0;
