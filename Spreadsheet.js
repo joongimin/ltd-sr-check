@@ -1,34 +1,37 @@
 const { google } = require('googleapis');
-const spreadsheetId = '1fOos207kGy4P4--OVNZbJR6iV6erJk60elNcRXc76kQ';
 
-class MemberSheet {
-  constructor(client) {
+class Spreadsheet {
+  constructor(client, spreadsheetId) {
     this.client = client;
+    this.spreadsheetId = spreadsheetId;
   }
 
   async get(range) {
-    const { data } = await this.client.get({ spreadsheetId, range });
+    const { data } = await this.client.get({
+      spreadsheetId: this.spreadsheetId,
+      range,
+    });
     return data;
   }
 
   async update(range, values) {
     return await this.client.update({
-      spreadsheetId,
+      spreadsheetId: this.spreadsheetId,
       range,
       valueInputOption: 'USER_ENTERED',
       resource: { values },
     });
   }
 
-  static async build() {
+  static async build(spreadsheetId) {
     const googleAuth = new google.auth.GoogleAuth({
       keyFilename: 'secret/ltd-sr-check-2c15bc2ecb33.json',
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
     const auth = await googleAuth.getClient();
     const { spreadsheets } = google.sheets({ version: 'v4', auth });
-    return new MemberSheet(spreadsheets.values);
+    return new Spreadsheet(spreadsheets.values, spreadsheetId);
   }
 }
 
-module.exports = MemberSheet;
+module.exports = Spreadsheet;

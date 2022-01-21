@@ -1,4 +1,4 @@
-const MemberSheet = require('./MemberSheet');
+const Spreadsheet = require('./Spreadsheet');
 const fetchAttendancesOld = require('./fetchAttendancesOld');
 
 const colToA1 = (col) => {
@@ -15,7 +15,9 @@ const colToA1 = (col) => {
 const updateAttendancesOld = async (instance, members) => {
   const attendances = await fetchAttendancesOld(instance);
 
-  const memberSheet = await MemberSheet.build();
+  const memberSheet = await Spreadsheet.build(
+    '1fOos207kGy4P4--OVNZbJR6iV6erJk60elNcRXc76kQ'
+  );
   const data = await memberSheet.get('Directory!1:1');
   const header = data.values[0].map((c) => c.toLowerCase());
   const a1 = colToA1(header.indexOf(instance) + 1);

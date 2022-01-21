@@ -1,7 +1,9 @@
-const MemberSheet = require('./MemberSheet');
+const Spreadsheet = require('./Spreadsheet');
 
 const fetchMembers = async () => {
-  const memberSheet = await MemberSheet.build();
+  const memberSheet = await Spreadsheet.build(
+    '1fOos207kGy4P4--OVNZbJR6iV6erJk60elNcRXc76kQ'
+  );
   const data = await memberSheet.get('Directory');
   const table = data.values;
   const header = table[0].map((c) => c.toLowerCase());
