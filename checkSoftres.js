@@ -31,7 +31,7 @@ const check = async (softresId) => {
     const name = row[0].toLowerCase();
     const attendance = row
       .slice(1, 11)
-      .filter((c) => c === 'P' || c === 'S').length;
+      .filter((c) => c === 'P' || c === 'S' || c === 'B').length;
     members[name] = attendance;
   });
 
