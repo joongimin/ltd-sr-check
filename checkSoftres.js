@@ -39,14 +39,12 @@ const check = async (softresId) => {
     ({ name, items, priorityItems }) => {
       const attendance = members[name] || 0;
 
-      if (attendance === 0) {
-        return items.length <= 1 && priorityItems.length === 0;
-      } else if (attendance === 1) {
+      if (attendance > 4) {
+        return items.length <= 2;
+      } else if (attendance > 0) {
         return items.length <= 2 && priorityItems.length === 0;
-      } else if (attendance >= 2) {
-        return items.length <= 2 && priorityItems.length <= 1;
       } else {
-        return false;
+        return items.length <= 1 && priorityItems.length === 0;
       }
     }
   );
