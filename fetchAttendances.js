@@ -4,7 +4,7 @@ const cheerio = require('cheerio');
 
 const getInstanceId = (instance) => {
   switch (instance) {
-    case 'naxx':
+    case 'naxxramas':
       return '2006';
     case 'aq40':
       return '2005';

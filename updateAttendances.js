@@ -3,7 +3,7 @@ const fetchAttendances = require('./fetchAttendances');
 
 const getSheetName = (instance) => {
   switch (instance) {
-    case 'naxx':
+    case 'naxxramas':
       return 'Naxx Attendance';
     case 'aq40':
       return 'AQ40 Attendance';

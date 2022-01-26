@@ -14,7 +14,7 @@ const { wowItemName } = require('./wow');
   }
 
   if (command === 'attendance') {
-    const instances = ['naxx', 'aq40', 'bwl', 'mc'];
+    const instances = ['naxxramas', 'aq40', 'bwl', 'mc'];
     instances.forEach(async (instance) => {
       await updateAttendances(instance);
     });

@@ -1,10 +1,11 @@
 const fetchSoftres = require('./fetchSoftres');
 const Spreadsheet = require('./Spreadsheet');
+const getRank = require('./getRank');
 const _ = require('lodash');
 
 const getSheetName = (instance) => {
   switch (instance) {
-    case 'naxx':
+    case 'naxxramas':
       return 'Naxx Attendance';
     case 'aq40':
       return 'AQ40 Attendance';
@@ -38,10 +39,11 @@ const check = async (softresId) => {
     reserves,
     ({ name, items, priorityItems }) => {
       const attendance = members[name] || 0;
+      const rank = getRank(attendance);
 
-      if (attendance > 4) {
+      if (rank === 'Regular Raider') {
         return items.length <= 2;
-      } else if (attendance > 0) {
+      } else if (rank === 'Intermediate Raider') {
         return items.length <= 2 && priorityItems.length === 0;
       } else {
         return items.length <= 1 && priorityItems.length === 0;

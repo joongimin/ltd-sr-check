@@ -1,29 +1,24 @@
 const fs = require('fs');
 const eris = require('eris');
-const updateAttendancesOld = require('./updateAttendancesOld');
 const checkSoftres = require('./checkSoftres');
-const fetchMembers = require('./fetchMembers');
 const _ = require('lodash');
 const { wowItemName } = require('./wow');
-
-const rankName = (attendance) => {
-  if (attendance >= 2) return 'Regular';
-  if (attendance === 1) return 'Second-timer';
-  return 'First-timer';
-};
+const updateAttendances = require('./updateAttendances');
+const getRank = require('./getRank');
+const ordinal = require('ordinal');
 
 const instanceName = (instance) => {
   if (instance === 'aq40') return "Ahn'Qiraj";
   if (instance === 'bwl') return 'Blackwing Lair';
   if (instance === 'mc') return 'Molten Core';
+  if (instance === 'naxxramas') return 'Naxxramas';
   return instance;
 };
 
 const runUpdateAttendances = async () => {
   const messages = [];
-  const members = await fetchMembers();
-  for (const instance of ['aq40', 'bwl', 'mc']) {
-    await updateAttendancesOld(instance, members);
+  for (const instance of ['naxxramas', 'aq40', 'bwl', 'mc']) {
+    await updateAttendances(instance);
     messages.push(`Updated attendances for ${instanceName(instance)}`);
   }
 
@@ -43,10 +38,11 @@ const runCheckSoftres = async (softresId) => {
   const messages = [];
   messages.push(`Invalid reserves for ${instanceName(instance)}:`);
   invalidReserves.forEach(({ name, items, priorityItems }) => {
-    const member = members.find((m) => m.name === name);
-    const attendance = member ? member[instance] : 0;
+    const attendance = members[name] || 0;
     messages.push(
-      `${_.capitalize(name)}(${rankName(attendance)}) - ${items
+      `${_.capitalize(name)}(${getRank(attendance)}, ${ordinal(
+        attendance + 1
+      )} time) - ${items
         .map(
           (i) =>
             `${wowItemName(i)}${priorityItems.includes(i) ? '(Priority)' : ''}`
