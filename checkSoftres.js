@@ -1,3 +1,4 @@
+const moment = require('moment');
 const fetchSoftres = require('./fetchSoftres');
 const Spreadsheet = require('./Spreadsheet');
 const getRank = require('./getRank');
@@ -16,6 +17,36 @@ const getSheetName = (instance) => {
   }
 };
 
+const getRecentRecordsCount = (instance, dates) => {
+  const MAX_WEEKS = 10;
+
+  const isConsecutive = instance === 'naxxramas';
+  if (isConsecutive) return MAX_WEEKS;
+
+  let lastResetDate;
+  let weeks = 1;
+  let records = 0;
+  for (let date of dates.slice(1)) {
+    const reportDate = moment(date.replaceAll('/', '-'));
+    const resetDate = moment(reportDate).subtract(
+      (reportDate.day() + 5) % 7,
+      'day'
+    );
+
+    lastResetDate = lastResetDate || resetDate;
+    if (!lastResetDate.isSame(resetDate)) {
+      weeks = weeks + 1;
+      if (weeks > MAX_WEEKS) break;
+
+      lastResetDate = resetDate;
+    }
+
+    records += 1;
+  }
+
+  return records;
+};
+
 const check = async (softresId) => {
   const { softresData, reserves } = await fetchSoftres(softresId);
   const instance = softresData.instance.toLowerCase();
@@ -26,11 +57,13 @@ const check = async (softresId) => {
   const data = await attendanceSheet.get(sheetName);
   const table = data.values;
 
+  const recentRecordsCount = getRecentRecordsCount(instance, table[0]);
+
   const members = {};
   table.slice(1).forEach((row) => {
     const name = row[0].toLowerCase();
     const attendance = row
-      .slice(1, 11)
+      .slice(1, 1 + recentRecordsCount)
       .filter((c) => c === 'P' || c === 'S' || c === 'B').length;
     members[name] = attendance;
   });
