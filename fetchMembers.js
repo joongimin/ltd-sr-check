@@ -6,7 +6,9 @@ moment.tz.setDefault('America/New_York');
 const MAX_WEEKS = 10;
 
 const getCutoffDate = () => {
-  const date = moment().startOf('day').subtract(MAX_WEEKS, 'weeks');
+  const date = moment()
+    .startOf('day')
+    .subtract(MAX_WEEKS - 1, 'weeks');
   return date.subtract((date.day() + 5) % 7, 'day');
 };
 
