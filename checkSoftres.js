@@ -1,4 +1,4 @@
-const moment = require('moment');
+const moment = require('moment-timezone');
 const fetchSoftres = require('./fetchSoftres');
 const Spreadsheet = require('./Spreadsheet');
 const getRank = require('./getRank');
@@ -17,29 +17,25 @@ const getSheetName = (instance) => {
   }
 };
 
-const getRecentRecordsCount = (instance, dates) => {
-  const MAX_WEEKS = 10;
+moment.tz.setDefault('America/New_York');
 
+const MAX_WEEKS = 10;
+
+const getCutoffDate = () => {
+  const date = moment().startOf('day').subtract(MAX_WEEKS, 'weeks');
+  return date.subtract((date.day() + 5) % 7, 'day');
+};
+
+const getRecentRecordsCount = (instance, dates) => {
   const isConsecutive = instance === 'naxxramas';
   if (isConsecutive) return MAX_WEEKS;
 
-  let lastResetDate;
-  let weeks = 1;
+  const cutOffDate = getCutoffDate();
+
   let records = 0;
   for (let date of dates.slice(1)) {
     const reportDate = moment(date.replaceAll('/', '-'));
-    const resetDate = moment(reportDate).subtract(
-      (reportDate.day() + 5) % 7,
-      'day'
-    );
-
-    lastResetDate = lastResetDate || resetDate;
-    if (!lastResetDate.isSame(resetDate)) {
-      weeks = weeks + 1;
-      if (weeks > MAX_WEEKS) break;
-
-      lastResetDate = resetDate;
-    }
+    if (reportDate < cutOffDate) break;
 
     records += 1;
   }
@@ -58,6 +54,11 @@ const check = async (softresId) => {
   const table = data.values;
 
   const recentRecordsCount = getRecentRecordsCount(instance, table[0]);
+  const firstReportDate = moment(
+    table[0][recentRecordsCount].replaceAll('/', '-')
+  ).format('l');
+
+  const lastReportDate = moment(table[0][1].replaceAll('/', '-')).format('l');
 
   const members = {};
   table.slice(1).forEach((row) => {
@@ -84,7 +85,13 @@ const check = async (softresId) => {
     }
   );
 
-  return { softresData, members, invalidReserves };
+  return {
+    softresData,
+    members,
+    invalidReserves,
+    firstReportDate,
+    lastReportDate,
+  };
 };
 
 module.exports = check;

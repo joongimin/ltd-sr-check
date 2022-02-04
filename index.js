@@ -15,9 +15,13 @@ const { wowItemName } = require('./wow');
 
   const softresId = command.replace('https://softres.it/raid/', '');
 
-  const { softresData, members, invalidReserves } = await checkSoftres(
-    softresId
-  );
+  const {
+    softresData,
+    members,
+    invalidReserves,
+    firstReportDate,
+    lastReportDate,
+  } = await checkSoftres(softresId);
   if (invalidReserves.length) {
     const { instance } = softresData;
     console.log(`Invalid reserves for ${instance}`);
@@ -35,6 +39,9 @@ const { wowItemName } = require('./wow');
       );
     });
   } else console.log(`Everything is valid for ${softresData.instance}`);
+  console.log(
+    `* Analyzed using reports ${firstReportDate} - ${lastReportDate}`
+  );
 })(process.argv[2]);
 
 // const fetchAttendances = require('./fetchAttendances');

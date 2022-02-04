@@ -28,28 +28,39 @@ const runUpdateAttendances = async () => {
 const runCheckSoftres = async (softresId) => {
   softresId = softresId.replace('https://softres.it/raid/', '');
 
-  const { softresData, members, invalidReserves } = await checkSoftres(
-    softresId
-  );
+  const {
+    softresData,
+    members,
+    invalidReserves,
+    firstReportDate,
+    lastReportDate,
+  } = await checkSoftres(softresId);
   const { instance } = softresData;
-  if (!invalidReserves.length)
-    return `All reserves are valid for ${instanceName(instance)}.`;
 
   const messages = [];
-  messages.push(`Invalid reserves for ${instanceName(instance)}:`);
-  invalidReserves.forEach(({ name, items, priorityItems }) => {
-    const attendance = members[name] || 0;
-    messages.push(
-      `${_.capitalize(name)}(${getRank(attendance)}, ${ordinal(
-        attendance + 1
-      )} time) - ${items
-        .map(
-          (i) =>
-            `${wowItemName(i)}${priorityItems.includes(i) ? '(Priority)' : ''}`
-        )
-        .join(', ')}`
-    );
-  });
+  if (invalidReserves.length) {
+    messages.push(`Invalid reserves for ${instanceName(instance)}:`);
+    invalidReserves.forEach(({ name, items, priorityItems }) => {
+      const attendance = members[name] || 0;
+      messages.push(
+        `${_.capitalize(name)}(${getRank(attendance)}, ${ordinal(
+          attendance + 1
+        )} time) - ${items
+          .map(
+            (i) =>
+              `${wowItemName(i)}${
+                priorityItems.includes(i) ? '(Priority)' : ''
+              }`
+          )
+          .join(', ')}`
+      );
+    });
+  } else messages.push(`All reserves are valid for ${instanceName(instance)}.`);
+
+  messages.push(
+    `*\\* Analyzed using reports ${firstReportDate} - ${lastReportDate}*`
+  );
+
   return messages.join('\n');
 };
 
