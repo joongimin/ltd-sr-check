@@ -1,18 +1,5 @@
-const Spreadsheet = require('./Spreadsheet');
+const AttendanceSheet = require('./AttendanceSheet');
 const fetchAttendances = require('./fetchAttendances');
-
-const getSheetName = (instance) => {
-  switch (instance) {
-    case 'naxxramas':
-      return 'Naxx Attendance';
-    case 'aq40':
-      return 'AQ40 Attendance';
-    case 'bwl':
-      return 'BWL Attendance';
-    case 'mc':
-      return 'MC Attendance';
-  }
-};
 
 const getDates = (attendances) => {
   const set = new Set();
@@ -21,11 +8,7 @@ const getDates = (attendances) => {
 };
 
 const updateAttendances = async (instance) => {
-  const attendanceSheet = await Spreadsheet.build(
-    '1GbYI2yrv5hGAzSzF8Ql8vXRwtLiuhrMAFgnQU5BWzFs'
-  );
-
-  const sheetName = getSheetName(instance);
+  const attendanceSheet = await AttendanceSheet.build();
 
   const attendances = await fetchAttendances(instance);
 
@@ -40,7 +23,7 @@ const updateAttendances = async (instance) => {
     members[name][index] = 'P';
   });
 
-  const data = await attendanceSheet.get(sheetName);
+  const data = await attendanceSheet.fetchWorksheet(instance);
   const oldTable = data.values;
   const oldDates = oldTable[0].slice(1);
   oldTable.slice(1).forEach((row) => {
@@ -59,7 +42,7 @@ const updateAttendances = async (instance) => {
   table.push(['Name', ...dates]);
   const names = Object.keys(members).sort();
   names.forEach((name) => table.push([name, ...members[name]]));
-  await attendanceSheet.update(sheetName, table);
+  await attendanceSheet.updateWorksheet(instance, table);
 };
 
 module.exports = updateAttendances;

@@ -1,21 +1,8 @@
 const moment = require('moment-timezone');
 const fetchSoftres = require('./fetchSoftres');
-const Spreadsheet = require('./Spreadsheet');
+const AttendanceSheet = require('./AttendanceSheet');
 const getRank = require('./getRank');
 const _ = require('lodash');
-
-const getSheetName = (instance) => {
-  switch (instance) {
-    case 'naxxramas':
-      return 'Naxx Attendance';
-    case 'aq40':
-      return 'AQ40 Attendance';
-    case 'bwl':
-      return 'BWL Attendance';
-    case 'mc':
-      return 'MC Attendance';
-  }
-};
 
 moment.tz.setDefault('America/New_York');
 
@@ -46,12 +33,8 @@ const getRecentRecordsCount = (instance, dates) => {
 const check = async (softresId) => {
   const { softresData, reserves } = await fetchSoftres(softresId);
   const instance = softresData.instance.toLowerCase();
-  const attendanceSheet = await Spreadsheet.build(
-    '1GbYI2yrv5hGAzSzF8Ql8vXRwtLiuhrMAFgnQU5BWzFs'
-  );
-  const sheetName = getSheetName(instance);
-  if (!sheetName) throw `Invalid instance type '${instance}'`;
-  const data = await attendanceSheet.get(sheetName);
+  const attendanceSheet = await AttendanceSheet.build();
+  const data = await attendanceSheet.fetchWorksheet(instance);
   const table = data.values;
 
   const recentRecordsCount = getRecentRecordsCount(instance, table[0]);
