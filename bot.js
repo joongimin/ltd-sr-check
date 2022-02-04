@@ -119,10 +119,10 @@ bot.on('messageCreate', async (msg) => {
             instances.forEach((instance) => {
               const attendance = member[instance].attendance || 0;
               messages.push(
-                `${instanceName(instance)}: ${getRank(attendance)}, ${ordinal(
-                  attendance + 1
-                )} time (${member[instance].firstReportDate} - ${
-                  member[instance].lastReportDate
+                `${instanceName(instance)}: ${getRank(
+                  attendance
+                )} (attended ${attendance} times since ${
+                  member[instance].firstReportDate
                 })`
               );
             });

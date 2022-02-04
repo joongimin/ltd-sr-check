@@ -4,7 +4,6 @@ const fetchMembers = require('./fetchMembers');
 const _ = require('lodash');
 const { wowItemName } = require('./wow');
 const getRank = require('./getRank');
-const ordinal = require('ordinal');
 
 const instanceName = (instance) => {
   if (instance === 'aq40') return "Ahn'Qiraj";
@@ -43,10 +42,10 @@ const instances = ['naxxramas', 'aq40', 'bwl', 'mc'];
     instances.forEach((instance) => {
       const attendance = member[instance].attendance || 0;
       console.log(
-        `${instanceName(instance)}: ${getRank(attendance)}, ${ordinal(
-          attendance + 1
-        )} time (${member[instance].firstReportDate} - ${
-          member[instance].lastReportDate
+        `${instanceName(instance)}: ${getRank(
+          attendance
+        )} (attended ${attendance} times since ${
+          member[instance].firstReportDate
         })`
       );
     });
