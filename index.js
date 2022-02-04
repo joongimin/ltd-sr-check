@@ -1,6 +1,5 @@
 const updateAttendances = require('./updateAttendances');
 const checkSoftres = require('./checkSoftres');
-const fetchMembers = require('./fetchMembers');
 const _ = require('lodash');
 const { wowItemName } = require('./wow');
 
@@ -50,17 +49,3 @@ const { wowItemName } = require('./wow');
     }
   }
 })(process.argv.slice(2));
-
-// const fetchAttendances = require('./fetchAttendances');
-
-// (async () => {
-//   const attendances = await fetchAttendances('aq40');
-//   console.log(attendances);
-// })();
-
-// const fetchMembers = require('./fetchMembers');
-
-// (async () => {
-//   const attendance = await fetchMembers('aq40');
-//   console.log(attendance);
-// })();
