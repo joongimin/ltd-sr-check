@@ -1,6 +1,6 @@
 const moment = require('moment-timezone');
 const fetchSoftres = require('./fetchSoftres');
-const AttendanceSheet = require('./AttendanceSheet');
+const fetchMembers = require('./fetchMembers');
 const getRank = require('./getRank');
 const _ = require('lodash');
 
@@ -33,25 +33,9 @@ const getRecentRecordsCount = (instance, dates) => {
 const check = async (softresId) => {
   const { softresData, reserves } = await fetchSoftres(softresId);
   const instance = softresData.instance.toLowerCase();
-  const attendanceSheet = await AttendanceSheet.build();
-  const data = await attendanceSheet.fetchWorksheet(instance);
-  const table = data.values;
-
-  const recentRecordsCount = getRecentRecordsCount(instance, table[0]);
-  const firstReportDate = moment(
-    table[0][recentRecordsCount].replaceAll('/', '-')
-  ).format('l');
-
-  const lastReportDate = moment(table[0][1].replaceAll('/', '-')).format('l');
-
-  const members = {};
-  table.slice(1).forEach((row) => {
-    const name = row[0].toLowerCase();
-    const attendance = row
-      .slice(1, 1 + recentRecordsCount)
-      .filter((c) => c === 'P' || c === 'S' || c === 'B').length;
-    members[name] = attendance;
-  });
+  const { members, firstReportDate, lastReportDate } = await fetchMembers(
+    instance
+  );
 
   const invalidReserves = _.reject(
     reserves,
