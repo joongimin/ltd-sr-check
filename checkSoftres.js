@@ -6,30 +6,6 @@ const _ = require('lodash');
 
 moment.tz.setDefault('America/New_York');
 
-const MAX_WEEKS = 10;
-
-const getCutoffDate = () => {
-  const date = moment().startOf('day').subtract(MAX_WEEKS, 'weeks');
-  return date.subtract((date.day() + 5) % 7, 'day');
-};
-
-const getRecentRecordsCount = (instance, dates) => {
-  const isConsecutive = instance === 'naxxramas';
-  if (isConsecutive) return MAX_WEEKS;
-
-  const cutOffDate = getCutoffDate();
-
-  let records = 0;
-  for (let date of dates.slice(1)) {
-    const reportDate = moment(date.replaceAll('/', '-'));
-    if (reportDate < cutOffDate) break;
-
-    records += 1;
-  }
-
-  return records;
-};
-
 const check = async (softresId) => {
   const { softresData, reserves } = await fetchSoftres(softresId);
   const instance = softresData.instance.toLowerCase();
