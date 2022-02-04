@@ -6,6 +6,7 @@ const { wowItemName } = require('./wow');
 const updateAttendances = require('./updateAttendances');
 const getRank = require('./getRank');
 const ordinal = require('ordinal');
+const fetchMembers = require('./fetchMembers');
 
 const instanceName = (instance) => {
   if (instance === 'aq40') return "Ahn'Qiraj";
@@ -96,9 +97,43 @@ bot.on('messageCreate', async (msg) => {
             message = err;
           }
         } else message = 'Usage: check <softres.it link>';
-      } else {
-        message = `Invalid command '${args[0]}'. Try using update or check`;
-      }
+      } else if (args[0] === 'member') {
+        if (args[1]) {
+          try {
+            const instances = ['naxxramas', 'aq40', 'bwl', 'mc'];
+            const messages = [];
+
+            const name = args[1].toLowerCase();
+            const member = {};
+
+            for (const instance of instances) {
+              const { members, firstReportDate, lastReportDate } =
+                await fetchMembers(instance);
+              member[instance] = {
+                attendance: members[name],
+                firstReportDate,
+                lastReportDate,
+              };
+            }
+            messages.push(`**${_.capitalize(name)}**`);
+            instances.forEach((instance) => {
+              const attendance = member[instance].attendance || 0;
+              messages.push(
+                `${instanceName(instance)}: ${getRank(attendance)}, ${ordinal(
+                  attendance + 1
+                )} time (${member[instance].firstReportDate} - ${
+                  member[instance].lastReportDate
+                })`
+              );
+            });
+
+            message = messages.join('\n');
+          } catch (err) {
+            message = err;
+          }
+        } else message = 'Usage: member <name>';
+      } else
+        message = `Invalid command '${args[0]}'. Try using update, check or member`;
 
       if (message) {
         const MAX_MESSAGE_LENGTH = 2000;
