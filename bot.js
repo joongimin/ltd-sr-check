@@ -84,13 +84,21 @@ bot.on('messageCreate', async (msg) => {
 
   if (botWasMentioned || receivedDM) {
     try {
-      const command = msg.content.includes(' ')
-        ? msg.content.split(' ')[1]
-        : msg.content;
+      const args = msg.content.replace(/^\<@!\d+\> /, '').split(' ');
 
       let message = null;
-      if (command === 'rank') message = await runUpdateAttendances();
-      else message = await runCheckSoftres(command);
+      if (args[0] === 'update') message = await runUpdateAttendances();
+      else if (args[0] === 'check') {
+        if (args[1]) {
+          try {
+            message = await runCheckSoftres(args[1]);
+          } catch (err) {
+            message = err;
+          }
+        } else message = 'Usage: check <softres.it link>';
+      } else {
+        message = `Invalid command '${args[0]}'. Try using update or check`;
+      }
 
       if (message) {
         const MAX_MESSAGE_LENGTH = 2000;

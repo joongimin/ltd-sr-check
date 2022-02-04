@@ -50,6 +50,7 @@ const check = async (softresId) => {
     '1GbYI2yrv5hGAzSzF8Ql8vXRwtLiuhrMAFgnQU5BWzFs'
   );
   const sheetName = getSheetName(instance);
+  if (!sheetName) throw `Invalid instance type '${instance}'`;
   const data = await attendanceSheet.get(sheetName);
   const table = data.values;
 
