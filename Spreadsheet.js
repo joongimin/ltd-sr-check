@@ -14,6 +14,13 @@ class Spreadsheet {
     return data;
   }
 
+  async clear(range) {
+    return await this.client.clear({
+      spreadsheetId: this.spreadsheetId,
+      range,
+    });
+  }
+
   async update(range, values) {
     return await this.client.update({
       spreadsheetId: this.spreadsheetId,

@@ -27,6 +27,7 @@ class AttendanceSheet {
   async updateWorksheet(instance, table) {
     const sheetName = getSheetName(instance);
     if (!sheetName) throw `Invalid instance type '${instance}'`;
+    await this.sheet.clear(sheetName);
     await this.sheet.update(sheetName, table);
   }
 
