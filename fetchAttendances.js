@@ -55,7 +55,7 @@ const fetchAttendancesFromPage = async (instanceId, page) => {
 const fetchAttendances = async (instance) => {
   const instanceId = getInstanceId(instance);
 
-  const MAX_PAGES = 1;
+  const MAX_PAGES = 10;
   const attendances = [];
   for (let i = 1; i <= MAX_PAGES; ++i) {
     const result = await fetchAttendancesFromPage(instanceId, i);
