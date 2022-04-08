@@ -77,7 +77,6 @@ bot.on('ready', () => {
 });
 
 bot.on('messageCreate', async (msg) => {
-  console.log(msg);
   const botWasMentioned = msg.mentions.find(
     (mentionedUser) => mentionedUser.id === bot.user.id
   );
@@ -85,7 +84,7 @@ bot.on('messageCreate', async (msg) => {
 
   if (botWasMentioned || receivedDM) {
     try {
-      const args = msg.content.replace(/^\<@!\d+\> /, '').split(' ');
+      const args = msg.content.replace(/^\<@\d+\> /, '').split(' ');
 
       let message = null;
       if (args[0] === 'update') message = await runUpdateAttendances();
